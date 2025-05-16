@@ -1,0 +1,32 @@
+version: '3.9'
+
+networks:
+  proxy.front-network:
+    driver: bridge
+
+services:
+  app:
+    image: ${your_docker_image}
+    ports:
+      - 8080:8080
+    networks:
+      - proxy.front-network
+    links:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/bidDB
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+
+
+  db:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    restart: always
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=wallet_db
+    networks:
+      - proxy.front-network

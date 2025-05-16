@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * Модель товара (продукта).
+ * Содержит основную информацию о продукте, такую как название, вес и цена.
+ */
 @Data
 @Entity
 @Table(name="product")

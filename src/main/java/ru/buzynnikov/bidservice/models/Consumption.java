@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.StringJoiner;
 
+/**
+ * Модель потребления продукта.
+ * Использует Lombok Data для автоматического создания геттеров, сеттеров, equals, hashCode и конструктора.
+ */
 @Data
 @Entity
 public class Consumption {

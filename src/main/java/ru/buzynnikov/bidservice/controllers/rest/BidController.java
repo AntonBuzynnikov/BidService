@@ -6,12 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.buzynnikov.bidservice.aspect.ToLog;
 import ru.buzynnikov.bidservice.models.Bid;
-import ru.buzynnikov.bidservice.models.Consumption;
 import ru.buzynnikov.bidservice.models.Product;
-import ru.buzynnikov.bidservice.services.BidService;
+import ru.buzynnikov.bidservice.services.interfaces.BidService;
 
 import java.util.HashMap;
 
+
+/**
+ * Контроллер для управления заявками (бидами).
+ * Обрабатывает запросы, связанные с отправкой и получением заявок.
+ */
 
 @RestController
 @RequestMapping("/bid")
@@ -19,13 +23,26 @@ import java.util.HashMap;
 public class BidController {
     private final BidService bidService;
 
-    //Выполнение запроса по созданию и получению заявки
+
+    /**
+     * Отправляет заявку и возвращает карту продуктов с их количеством.
+     * Запись операции фиксируется в логах благодаря аннотации @ToLog.
+     *
+     * @return Ответ сервера с картой продуктов и статусом CREATED (201).
+     */
     @ToLog
     @GetMapping("/send")
     public ResponseEntity<HashMap<Product,Double>> sendBid(){
         return new ResponseEntity<>(bidService.sendBid(), HttpStatus.CREATED);
     }
-    //Возвращает общую информацию по заявке
+
+    /**
+     * Получает заявку по её идентификатору.
+     * Запись операции фиксируется в логах благодаря аннотации @ToLog.
+     *
+     * @param id Идентификатор заявки.
+     * @return Ответ сервера с объектом заявки и статусом OK (200).
+     */
     @ToLog
     @GetMapping("/{id}")
     public ResponseEntity<Bid> getBid(@PathVariable Long id){

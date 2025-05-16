@@ -2,7 +2,10 @@ package ru.buzynnikov.bidservice.dto;
 
 import lombok.Data;
 
-//Объект для добавления или обновления продукта
+/**
+ * DTO-класс для представления данных о продукте.
+ * Используется для добавления или обновления информации о продуктах.
+ */
 @Data
 public class ProductDTO {
     private String name;

@@ -12,13 +12,18 @@ import org.springframework.http.ResponseEntity;
 import ru.buzynnikov.bidservice.controllers.rest.ProductController;
 import ru.buzynnikov.bidservice.dto.ProductDTO;
 import ru.buzynnikov.bidservice.models.Product;
-import ru.buzynnikov.bidservice.services.ProductService;
+import ru.buzynnikov.bidservice.services.interfaces.ProductService;
+
 import static org.mockito.Mockito.doReturn;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Модульные тесты для контроллера продуктов (ProductController).
+ * Тестируют различные сценарии обработки запросов к контроллеру.
+ */
 @ExtendWith(MockitoExtension.class)
 public class ProductControllerModuleTest {
     @InjectMocks
@@ -29,6 +34,10 @@ public class ProductControllerModuleTest {
     private static ProductDTO dto;
     private static Product product;
 
+    /**
+     * Подготовительные действия перед всеми тестами.
+     * Создаются объекты для последующих проверок.
+     */
     @BeforeAll
     public static void getProductDto(){
         dto = new ProductDTO();
@@ -45,6 +54,10 @@ public class ProductControllerModuleTest {
         product.setName("Бекон");
     }
 
+    /**
+     * Тестирует успешное получение списка всех продуктов.
+     * Проверяет статус ответа и содержание тела ответа.
+     */
     @Test
     @DisplayName("GET /product/all возвращает HTTP ответ со статусом 200 OK и списком задач")
     public void handleGetAllProducts(){
@@ -58,6 +71,11 @@ public class ProductControllerModuleTest {
         assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
         assertEquals(products, responseEntity.getBody());
     }
+
+    /**
+     * Тестирует успешное сохранение нового продукта.
+     * Проверяет статус ответа и правильность возвращаемого продукта.
+     */
     @Test
     public void saveProductTest(){
         doReturn(product).when(this.service).saveProduct(dto);
@@ -68,6 +86,10 @@ public class ProductControllerModuleTest {
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals(product, responseEntity.getBody());
     }
+    /**
+     * Тестирует успешное обновление продукта.
+     * Проверяет статус ответа и корректность изменений.
+     */
     @Test
     public void updateProductTest(){
         Long id = 1L;
@@ -82,6 +104,10 @@ public class ProductControllerModuleTest {
         assertEquals(product, responseEntity.getBody());
 
     }
+    /**
+     * Тестирует успешное удаление продукта.
+     * Проверяет статус ответа и корректность возвращаемого идентификатора.
+     */
     @Test
     public void deleteProductTest(){
         Long id = 1L;

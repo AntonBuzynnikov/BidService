@@ -2,7 +2,10 @@ package ru.buzynnikov.bidservice.dto;
 
 import lombok.Data;
 
-//Для получения данных от клиента
+/**
+ * DTO-класс для представления данных о пользователе.
+ * Используется для регистрации или аутентификации пользователей.
+ */
 @Data
 public class UserDTO {
     private String login;

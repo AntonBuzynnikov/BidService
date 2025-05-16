@@ -1,9 +1,7 @@
 package ru.buzynnikov.bidservice;
 
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +11,7 @@ import ru.buzynnikov.bidservice.controllers.rest.ProductController;
 import ru.buzynnikov.bidservice.dto.ProductDTO;
 import ru.buzynnikov.bidservice.models.Product;
 import ru.buzynnikov.bidservice.repositories.ProductRepository;
-import ru.buzynnikov.bidservice.services.ProductService;
+import ru.buzynnikov.bidservice.services.interfaces.ProductService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +20,10 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Интеграционные тесты для функционала работы с продуктами.
+ * Проводятся реальные запросы к приложению через SpringBootContext.
+ */
 @SpringBootTest
 public class ProductIntegrationTest {
     @Autowired
@@ -35,6 +37,10 @@ public class ProductIntegrationTest {
     private static ProductDTO dto_1;
     private static ProductDTO dto_2;
 
+    /**
+     * Подготовительная настройка перед выполнением тестов.
+     * Создаются два тестовых продукта и соответствующие DTO.
+     */
     @BeforeAll
     public static void setProducts(){
         product_1 = new Product();
@@ -59,6 +65,10 @@ public class ProductIntegrationTest {
     }
 
 
+    /**
+     * Тест успешного получения списка всех продуктов.
+     * Проверяются статус ответа и корректность содержания.
+     */
     @Test
     public void handleGetAllProducts(){
         Product saved_1 = this.service.saveProduct(dto_1);
@@ -68,8 +78,11 @@ public class ProductIntegrationTest {
         System.out.println(responseEntity.getBody());
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
-//        assertEquals(products, responseEntity.getBody());
     }
+    /**
+     * Тест успешного сохранения нового продукта.
+     * Проверяется статус ответа и правильное присвоение свойств.
+     */
     @Test
     public void saveProductTest(){
         ResponseEntity<Product> responseEntity = this.controller.saveProduct(dto_1);
@@ -78,6 +91,10 @@ public class ProductIntegrationTest {
         assertEquals(HttpStatus.CREATED,responseEntity.getStatusCode());
         assertEquals(product_1.getName(), Objects.requireNonNull(responseEntity.getBody()).getName());
     }
+    /**
+     * Тест успешного обновления продукта.
+     * Проверяется статус ответа и корректность внесенных изменений.
+     */
     @Test
     public void updateProductTest(){
         ProductDTO dtoUpdate = new ProductDTO();
@@ -91,6 +108,10 @@ public class ProductIntegrationTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(BigDecimal.valueOf(650.0), Objects.requireNonNull(responseEntity.getBody()).getPrice());
     }
+    /**
+     * Тест успешного удаления продукта по идентификатору.
+     * Проверяется статус ответа и корректность возвращения удаленного идентификатора.
+     */
     @Test
     public void deleteByIdTest(){
         Product saved = this.service.saveProduct(dto_1);

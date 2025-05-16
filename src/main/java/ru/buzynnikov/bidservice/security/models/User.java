@@ -10,7 +10,11 @@ import java.util.Collection;
 import java.util.List;
 
 
-// Сущность для пользователей приложения
+
+/**
+ * Сущность для пользователей приложения.
+ * Реализует интерфейс UserDetails для поддержки механизмов безопасности Spring Security.
+ */
 @Data
 @Entity
 @Table(name = "users_sec")

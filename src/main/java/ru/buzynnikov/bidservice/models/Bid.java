@@ -7,6 +7,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
+/**
+ * Класс {@code Bid}, представляющий сущность заявки (bid).
+ * Используется для хранения информации о заявках в приложении.
+ */
 @Data
 @Entity
 @Table(name = "bids")

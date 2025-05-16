@@ -9,29 +9,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.buzynnikov.bidservice.aspect.ToLog;
 import ru.buzynnikov.bidservice.models.Consumption;
-import ru.buzynnikov.bidservice.services.ConsumptionService;
+import ru.buzynnikov.bidservice.services.interfaces.ConsumptionService;
+
 import java.util.List;
 
+/**
+ * Контроллер для управления расходами (consumptions).
+ * Предоставляет возможность отправки запросов на добавление расходов.
+ */
 @RestController
 @RequestMapping("/consumption")
 @RequiredArgsConstructor
 public class ConsumptionController {
     private final ConsumptionService service;
 
-    /*
-    Отправляем запрос с данными для добавление расхода. Пример:
-    [
-        {
-            "idProduct":0000,
-            "consumption":10
-        },
-        {
-            "idProduct":0001,
-            "consumption":15
-        }
-    ]
-    Параметр idProduct должен соответсвовать параметру Product.id,
-    иначе данные будут проигнорированы
+
+    /**
+     * Добавляет список расходов.
+     * Данные отправляются в теле запроса в формате списка объектов типа Consumption.
+     * Поле idProduct должно соответствовать полю id модели Product, иначе данные игнорируются.
+     *
+     * Пример тела запроса:
+     * [
+     *     {"idProduct":0000,"consumption":10},
+     *     {"idProduct":0001,"consumption":15}
+     * ]
+     *
+     * @param consumptionList Список расходов для добавления
+     * @return Список успешно добавленных расходов с HTTP-статусом OK (200)
      */
     @ToLog
     @PostMapping("/add")

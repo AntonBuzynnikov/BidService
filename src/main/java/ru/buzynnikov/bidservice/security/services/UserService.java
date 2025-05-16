@@ -12,24 +12,45 @@ import ru.buzynnikov.bidservice.security.repositories.UserRepository;
 
 import java.util.Optional;
 
+/**
+ * Сервис для работы с пользователями.
+ * Реализует интерфейсы для загрузки пользователя по имени и регистрации нового пользователя.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final PasswordEncoder encoder;
     private final UserRepository repository;
 
-    // поиск пользователя в базе данных
+    /**
+     * Загружает пользователя по имени (логину).
+     *
+     * @param username Логин пользователя
+     * @return Экземпляр UserDetails, соответствующий указанному логину
+     * @throws UsernameNotFoundException Если пользователь не найден
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = repository.findByLogin(username);
         return userOptional.orElseThrow();
     }
 
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param dto DTO с регистрационной информацией
+     * @return Зарегистрированного пользователя
+     */
     public User registry(UserDTO dto){
         return repository.save(createUser(dto));
     }
 
-    //поиск пользователя в базе данных и сохранение в БД, если пользователь не найден
+    /**
+     * Создает новую запись пользователя.
+     *
+     * @param dto DTO с регистрационной информацией
+     * @return Новый экземпляр пользователя
+     */
     private User createUser(UserDTO dto){
         Optional<User> userOptional = repository.findByLogin(dto.getLogin());
         if (userOptional.isPresent()){

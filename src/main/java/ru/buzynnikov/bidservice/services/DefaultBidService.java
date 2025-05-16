@@ -10,6 +10,9 @@ import ru.buzynnikov.bidservice.models.Quantity;
 import ru.buzynnikov.bidservice.repositories.BidRepository;
 import ru.buzynnikov.bidservice.repositories.ProductRepository;
 import ru.buzynnikov.bidservice.repositories.QuantityRepository;
+import ru.buzynnikov.bidservice.services.interfaces.BidService;
+import ru.buzynnikov.bidservice.services.interfaces.ConsumptionService;
+import ru.buzynnikov.bidservice.services.interfaces.ProductService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,9 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервис для работы с заявками (BidService).
+ * Управляет созданием, поиском и обработкой заявок.
+ */
 @Service
 @RequiredArgsConstructor
-public class BidService {
+public class DefaultBidService implements BidService {
     //Коэффициент,увеличивающий количество продуктов, относительно расхода за прошедший период
     private final String FACTOR = "1.2";
     private final BidRepository bidRepository;
@@ -29,7 +36,14 @@ public class BidService {
     private final QuantityRepository quantityRepository;
     private final ConsumptionService consumptionService;
 
-    //Возвращает полностью созданную заявку
+    /**
+     * Формирование и возврат полной заявки.
+     * Создается новая заявка, рассчитывается необходимое количество продукции,
+     * формируется итоговая сумма и очищаются предыдущие расходы.
+     *
+     * @return Map с продукцией и необходимым количеством
+     */
+    @Override
     public HashMap<Product, Double> sendBid(){
         Bid bidInfo = bidRepository.save(createBid());
         HashMap<Product, Double> bid = new HashMap<>();
@@ -43,24 +57,50 @@ public class BidService {
         consumptionService.deleteAllConsumptions();
         return bid;
     }
-    //Поиск заявки в базе данных
+
+    /**
+     * Поиск заявки по идентификатору.
+     *
+     * @param id Идентификатор заявки
+     * @return Найденная заявка или выброшено исключение, если заявка не найдена
+     */
+    @Override
     public Bid getBidById(Long id){
         Optional<Bid> bid = bidRepository.findById(id);
         return bid.orElseThrow(()-> new BidNotFoundException("Заявка не найдена"));
     }
-    //Создание объекта с основной информацией о заявке
+
+    /**
+     * Создание новой заявки.
+     *
+     * @return Новая заявка с установленным временем создания
+     */
     private Bid createBid(){
         Bid bid = new Bid();
         bid.setTimeCreate(LocalDateTime.now());
         return bid;
     }
-    //Возвращает количество продукта для заказа
+
+    /**
+     * Рассчитывает необходимое количество продукции, учитывая предыдущий расход и коэффициент.
+     *
+     * @param weight Вес единицы продукции
+     * @param consumption Уровень предыдущего расхода
+     * @return Необходимое количество продукции
+     */
     private Double setQuantity(BigDecimal weight, Double consumption){
         double quantity = consumption * Double.parseDouble(FACTOR);
         if(weight.doubleValue() != 1) return Math.ceil(quantity/weight.doubleValue());
         return  Math.ceil(quantity);
     }
-    //Возвращает список заказываемых продуктов
+
+    /**
+     * Формирует список количеств продукции для конкретной заявки.
+     *
+     * @param consumptions Список расходов предыдущей поставки
+     * @param bidId Идентификатор заявки
+     * @return Список количеств для размещения заказа
+     */
     private List<Quantity> createListQuantity(List<Consumption> consumptions,Long bidId){
         List<Quantity> quantities = new ArrayList<>();
         for (Consumption product: consumptions){
@@ -74,7 +114,15 @@ public class BidService {
         }
         return quantities;
     }
-    // Сохранение в базе данных количества по указанному продукту
+
+    /**
+     * Создает запись количества для определенного продукта в рамках заявки.
+     *
+     * @param productId Идентификатор продукта
+     * @param quantity Необходимое количество
+     * @param bidId Идентификатор заявки
+     * @return Новое количество продукции
+     */
     private Quantity createQuantity(Long productId, Double quantity, Long bidId){
         Quantity quant = new Quantity();
         quant.setQuantity(quantity);
@@ -82,7 +130,13 @@ public class BidService {
         quant.setBidId(bidId);
         return quantityRepository.save(quant);
     }
-    //Подсчёт общей суммы заявки
+
+    /**
+     * Вычисляет общую сумму заявки, умножая цену каждого продукта на его количество.
+     *
+     * @param quantities Список необходимых количеств
+     * @return Итоговая сумма заявки
+     */
     private BigDecimal getSum(List<Quantity> quantities){
         BigDecimal sum = new BigDecimal(0);
         for (Quantity quantity : quantities) {
